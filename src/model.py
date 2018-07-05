@@ -205,22 +205,22 @@ def get_model(x, adj, num_classes, architecture):
 		0 - input(3) - LIN(16) - CONV(32) - CONV(64) - CONV(128) - LIN(1024) - Output(50)
 		"""
 		if architecture == 0:
-				out_channels_fc0 = 8
+				out_channels_fc0 = 16
 				h_fc0 = tf.nn.relu(custom_lin(x, out_channels_fc0))
 				# Conv1
 				M_conv1 = 9
-				out_channels_conv1 = 8
+				out_channels_conv1 = 32
 				h_conv1 = tf.nn.relu(custom_conv2d(h_fc0, adj, out_channels_conv1, M_conv1))
 				# Conv2
 				M_conv2 = 9
-				out_channels_conv2 = 8
+				out_channels_conv2 = 64
 				h_conv2 = tf.nn.relu(custom_conv2d(h_conv1, adj, out_channels_conv2, M_conv2))
 				# Conv3
 				M_conv3 = 9
-				out_channels_conv3 = 8
+				out_channels_conv3 = 128
 				h_conv3 = tf.nn.relu(custom_conv2d(h_conv2, adj, out_channels_conv3, M_conv3))
 				# Lin(1024)
-				out_channels_fc1 = 64
+				out_channels_fc1 = 1024
 				h_fc1 = tf.nn.relu(custom_lin(h_conv3, out_channels_fc1))
 				# Lin(num_classes)
 				y_conv = custom_lin(h_fc1, num_classes)
