@@ -15,19 +15,18 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--architecture', type=int, default=0)
 parser.add_argument('--dataset_path')
 parser.add_argument('--results_path')
-parser.add_argument('--num_epochs', type=int, default=200)
+parser.add_argument('--num_iterations', type=int, default=50000)
 parser.add_argument('--num_input_channels', type=int, default=3)
 parser.add_argument('--learning_rate', type=float, default=0.001)
 parser.add_argument('--num_points', type=int)
 parser.add_argument('--num_classes', type=int)
-
 
 FLAGS = parser.parse_args()
 
 ARCHITECTURE = FLAGS.architecture
 DATASET_PATH = FLAGS.dataset_path
 RESULTS_PATH = FLAGS.results_path
-NUM_EPOCHS = FLAGS.num_epochs
+NUM_ITERATIONS = FLAGS.num_iterations
 NUM_INPUT_CHANNELS = FLAGS.num_input_channels
 LEARNING_RATE = FLAGS.learning_rate
 NUM_POINTS = FLAGS.num_points
@@ -39,8 +38,8 @@ if not os.path.exists(RESULTS_PATH):
 
 """
 Load dataset 
-x of size [batch_size, num_points, in_channels] : in_channels can be x,y,z coordinates or any other descriptor
-adj of size [batch_size, num_points, K] : This is a list of indices of neigbors of each vertex. (Index starting with 1)
+x (train_data) of size [batch_size, num_points, in_channels] : in_channels can be x,y,z coordinates or any other descriptor
+adj (adj_input) of size [batch_size, num_points, K] : This is a list of indices of neigbors of each vertex. (Index starting with 1)
 										  K is the maximum neighborhood size. If a vertex has less than K neighbors, the remaining list is filled with 0.
 
 """
@@ -68,5 +67,13 @@ if ckpt and ckpt.model_checkpoint_path:
 		saver.restore(sess, ckpt.model_checkpoint_path)
 		write_logs("Checkpoint restored\n")
 
-
 # Train for the dataset
+
+for iter in range(NUM_ITERATIONS):
+	i = train_shuffle[iter%(len(train_data))]
+	input = train_data[i]
+	if iter%1000 == 0:
+		train_accuracy = accuracy.eval(feed_dict={x:input, adj:adj_input, y_: label})
+		write_logs("Iteration %d, training accuracy %g\n"%(iter, train_accuracy))
+	train_step.run(feed_dict={x:input, adj:train_adj, y_: label})
+
