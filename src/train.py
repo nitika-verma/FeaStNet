@@ -5,6 +5,8 @@ import math
 import time
 import h5py
 import argparse
+from model import *
+from utils import * 
 
 random_seed = 0
 np.random.seed(random_seed)
