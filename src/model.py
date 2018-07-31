@@ -89,7 +89,7 @@ def get_slices(x, adj):
 		x = tf.reshape(x, [batch_size*(num_points+1), in_channels])
 		adj = tf.reshape(adj, [batch_size*num_points*K])
 		adj_flat = tile_repeat(batch_size, num_points*K)
-		adj_flat = adj_flat*in_channels
+		adj_flat = adj_flat*(num_points+1)
 		adj_flat = adj_flat + adj
 		adj_flat = tf.reshape(adj_flat, [batch_size*num_points, K])
 		slices = tf.gather(x, adj_flat)
